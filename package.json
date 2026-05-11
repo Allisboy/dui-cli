@@ -1,0 +1,26 @@
+{
+  "name": "dui-cli",
+  "version": "0.1.0",
+  "description": "A CLI tool to add Dui components to your PawaJS project.",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "dui": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pawajs",
+    "dui",
+    "cli",
+    "components"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "kolorist": "^1.8.0"
+  }
+}
