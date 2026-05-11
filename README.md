@@ -1,4 +1,4 @@
-# dui-cli
+# designs-dui-cli
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PawaJS](https://img.shields.io/badge/Framework-PawaJS-orange.svg)](https://pawajs.vercel.app)
@@ -28,13 +28,13 @@ A Command Line Interface (CLI) tool designed to streamline the process of adding
 To use `dui-cli`, you typically install it globally or use `npx`.
 
 ```bash
-npm install -g dui-cli
+npm install -g designs-dui-cli
 ```
 
 Alternatively, using yarn:
 
 ```bash
-yarn global add dui-cli
+yarn global add designs-dui-cli
 ```
 
 ## Usage
