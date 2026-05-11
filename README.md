@@ -1,5 +1,8 @@
 # dui-cli
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PawaJS](https://img.shields.io/badge/Framework-PawaJS-orange.svg)](https://pawajs.vercel.app)
+
 A Command Line Interface (CLI) tool designed to streamline the process of adding Dui components to your PawaJS projects.
 
 ## Table of Contents
@@ -10,7 +13,6 @@ A Command Line Interface (CLI) tool designed to streamline the process of adding
     *   [dui init](#dui-init)
     *   [dui add](#dui-add)
 *   [Adding New Component Templates](#adding-new-component-templates)
-*   [Example Workflow](#example-workflow)
 *   [Contributing](#contributing)
 *   [License](#license)
 
@@ -27,7 +29,11 @@ To use `dui-cli`, you typically install it globally or use `npx`.
 
 ```bash
 npm install -g dui-cli
-# or
+```
+
+Alternatively, using yarn:
+
+```bash
 yarn global add dui-cli
 ```
 
@@ -102,4 +108,3 @@ Contributions are welcome! If you have suggestions for new features, bug reports
 ## License
 
 This project is licensed under the MIT License.
-
