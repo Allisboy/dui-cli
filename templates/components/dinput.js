@@ -42,7 +42,7 @@ export const DinputIcon = ({ children, side, className, asChild, ...props }) => 
 }
 
 export const Dinput = ({ className, type, size, error, asChild, ...props }) => {
-    forwardProps(props)
+    forwardProps({type,...props})
     const { id } = useContext(formItemContext) || {}
     const groupCtx = useContext(buttonGroupContext) || {}
     const iconCtx = useContext(inputGroupContext)
@@ -72,7 +72,7 @@ export const Dinput = ({ className, type, size, error, asChild, ...props }) => {
         return cn(baseStyles, s, err, iconPadding, "peer", className())
     }
 
-    useInsert({ classActive, type, inputId: () => id || '' })
+    useInsert({ classActive, inputId: () => id || '' })
 
     return html`
         <${Element} 

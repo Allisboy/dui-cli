@@ -1,23 +1,28 @@
-import { html, setContext, useContext, useInsert, useValidateComponent, $state } from "pawajs"
+import { html, setContext, useContext, useInsert, useValidateComponent, $state, forwardProps } from "pawajs"
 import { cn } from "./utils"
 
 const popoverContext = setContext()
 
-export const Dpopover = ({ children, asChild }) => {
+export const Dpopover = ({ children, asChild, ...props }) => {
+    forwardProps(props)
     const isOpen = $state(false)
-    
-    popoverContext.setValue({ isOpen })
+    const close = () => isOpen.value = false
+
+    popoverContext.setValue({ isOpen, close })
 
     const Element = asChild() ? 'as-child' : 'div';
+    const classActive = () => cn("relative inline-block", isOpen.value ? "z-50" : "")
+    useInsert({ classActive })
 
     return html`
-        <${Element} class="relative inline-block">
+        <${Element} class="@{classActive()}" -- >
             ${children}
         </${Element}>
     `
 }
 
-export const DpopoverTrigger = ({ children, asChild }) => {
+export const DpopoverTrigger = ({ children, asChild, ...props }) => {
+    forwardProps(props)
     const { isOpen } = useContext(popoverContext)
 
     const Element = asChild() ? 'as-child' : 'div';
@@ -33,14 +38,27 @@ export const DpopoverTrigger = ({ children, asChild }) => {
     useInsert({ toggle })
 
     return html`
-        <${Element} class="inline-block" on-click="toggle()">
+        <${Element} class="inline-block" on-click="toggle()" -- >
             ${children}
         </${Element}>
     `
 }
 
-export const DpopoverContent = ({ children, className, side, asChild }) => {
-    const { isOpen } = useContext(popoverContext)
+export const DpopoverOverlay = ({ className, asChild, ...props }) => {
+    forwardProps(props)
+    const { isOpen, close } = useContext(popoverContext)
+    const classActive = () => cn("fixed inset-0 z-40 bg-black/50 backdrop-blur-sm animate-in fade-in-0", className())
+    const Element = asChild() ? 'as-child' : 'div';
+
+    useInsert({ isOpen: () => isOpen.value, classActive, close })
+
+    return html `<${Element} if="isOpen()" class="@{classActive()}" on-click.self="close()" -- >
+    </${Element}>`
+}
+
+export const DpopoverContent = ({ children, className, side, asChild, ...props }) => {
+    forwardProps(props)
+    const { isOpen, close } = useContext(popoverContext)
 
     const sides = () => ({
         top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
@@ -49,7 +67,7 @@ export const DpopoverContent = ({ children, className, side, asChild }) => {
         right: "left-full top-1/2 -translate-y-1/2 ml-2"
     })
 
-    const classActive = () => cn(
+    const classes = () => cn(
         "absolute z-50 w-72 rounded-md border border-border bg-background p-4 text-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95",
         sides()[side()] || sides().bottom,
         className()
@@ -57,12 +75,13 @@ export const DpopoverContent = ({ children, className, side, asChild }) => {
 
     const Element = asChild() ? 'as-child' : 'div';
 
-    useInsert({ isOpen: () => isOpen.value, classActive })
+    useInsert({ isOpen: () => isOpen.value, classes, close })
 
     return html`
         <${Element} 
             if="isOpen()" 
-            class="@{classActive()}"
+            class="@{classes()}"
+            out-click.self="close()"
             --
         >
             ${children}
@@ -72,6 +91,10 @@ export const DpopoverContent = ({ children, className, side, asChild }) => {
 
 useValidateComponent(Dpopover, { asChild: { type: Boolean, default: false } })
 useValidateComponent(DpopoverTrigger, { asChild: { type: Boolean, default: false } })
+useValidateComponent(DpopoverOverlay, {
+    className: { default: '', type: String },
+    asChild: { type: Boolean, default: false }
+})
 useValidateComponent(DpopoverContent, {
     className: { default: '', type: String },
     side: { 

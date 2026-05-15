@@ -1,9 +1,9 @@
-import { $state, html, setContext, useContext, useInsert, useValidateComponent } from "pawajs"
+import { $state, forwardProps, html, setContext, useContext, useInsert, useValidateComponent } from "pawajs"
 import { cn } from "./utils"
 
 const collapseContext=setContext()
-export const Dcollapsable=({className,children})=>{
-    const { asChild } = props;
+export const Dcollapsable=({className,children,asChild,...props})=>{
+    forwardProps(props)
     const isOpen = $state(false)
     collapseContext.setValue({ isOpen })
     const createStyle=()=>cn('w-full ',className())
@@ -12,13 +12,14 @@ export const Dcollapsable=({className,children})=>{
 
     useInsert({createStyle})
     return html `
-    <${Element} class="@{createStyle()}">
+    <${Element} class="@{createStyle()}" -- >
         ${children}
     </${Element}>
     `
 }
 
-export const DcollapseTrigger=({className,children,asChild})=>{
+export const DcollapseTrigger=({className,children,asChild,...props})=>{
+    forwardProps(props)
     const { isOpen } = useContext(collapseContext)
     const toggle = () => isOpen.value = !isOpen.value
     const createStyle = () => cn('w-full flex flex-row items-center justify-between cursor-pointer', className())
@@ -28,13 +29,14 @@ export const DcollapseTrigger=({className,children,asChild})=>{
     useInsert({ toggle, createStyle, open: () => isOpen.value })
     
     return html `
-    <div class="@{createStyle()}" on-click="toggle()" aria-expanded="@{open()}">
+    <div class="@{createStyle()}" on-click="toggle()" aria-expanded="@{open()}" -- >
         ${children}
     </div>
     `
 }
 
-export const DcollapsableContent = ({ className, children, asChild }) => {
+export const DcollapsableContent = ({ className, children, asChild,...props }) => {
+    forwardProps(props)
     const { isOpen } = useContext(collapseContext)
     const createStyle = () => cn('overflow-hidden text-sm transition-all', className())
     

@@ -6,19 +6,37 @@ const navigationMenuContext = setContext()
 export const DnavigationMenu = ({ children, className, asChild, ...props }) => {
     forwardProps(props)
     const activeValue = $state(null)
+    let timeout = null
+
+    const onValueChange = (val) => {
+        if (timeout) clearTimeout(timeout)
+        activeValue.value = val
+    }
+
+    const handleClose = () => {
+        timeout = setTimeout(() => {
+            activeValue.value = null
+        }, 200) // 200ms grace period
+    }
+
+    const cancelClose = () => {
+        if (timeout) clearTimeout(timeout)
+    }
     
     navigationMenuContext.setValue({ 
         activeValue, 
-        onValueChange: (val) => activeValue.value = val 
+        onValueChange,
+        handleClose,
+        cancelClose
     })
 
     const classActive = () => cn("relative z-10 flex w-full items-center justify-center", className())
     const Element = asChild() ? 'as-child' : 'nav';
 
-    useInsert({ classActive,activeValue })
+    useInsert({ classActive, activeValue, handleClose })
 
     return html`
-        <${Element} class="@{classActive()}" dir="ltr" on-mouseleave="activeValue.value = null">
+        <${Element} class="@{classActive()}" dir="ltr" on-mouseleave="handleClose()">
             ${children}
         </${Element}>
     `
@@ -71,7 +89,7 @@ export const DnavigationMenuTrigger = ({ children, className, value, asChild }) 
 }
 
 export const DnavigationMenuContent = ({ children, className, value, asChild, align }) => {
-    const { activeValue } = useContext(navigationMenuContext)
+    const { activeValue, handleClose, cancelClose } = useContext(navigationMenuContext)
     const isVisible = () => activeValue.value === value()
 
     const alignments = () => ({
@@ -87,10 +105,20 @@ export const DnavigationMenuContent = ({ children, className, value, asChild, al
     )
 
     const Element = asChild() ? 'as-child' : 'div';
-    useInsert({ isVisible, classActive })
+    useInsert({ 
+        isVisible, 
+        classActive,
+        onEnter: () => cancelClose(),
+        onLeave: () => handleClose()
+    })
 
     return html`
-        <${Element} if="isVisible()" class="@{classActive()}">
+        <${Element} 
+            if="isVisible()" 
+            class="@{classActive()}"
+            on-mouseenter="onEnter()"
+            on-mouseleave="onLeave()"
+        >
             ${children}
         </${Element}>
     `

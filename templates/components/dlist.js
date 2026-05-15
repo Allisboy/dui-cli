@@ -24,7 +24,7 @@ export const DlistHeader = ({ children, className, asChild, ...props }) => {
 export const DlistItem = ({ children, className, asChild, ...props }) => {
     forwardProps(props);
     const classActive = () => cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] cursor-default select-none",
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground cursor-default select-none",
         className()
     );
     const Element = asChild() ? 'as-child' : 'li';

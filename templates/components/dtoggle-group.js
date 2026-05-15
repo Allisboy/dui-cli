@@ -97,7 +97,3 @@ useValidateComponent(DtoggleGroup, {
     asChild: { type: Boolean, default: false }
 });
 
-useValidateComponent(DtoggleGroupItem, {
-    value: { type: String, strict: true },
-    className: { default: '', type: String }
-});

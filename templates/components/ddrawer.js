@@ -3,8 +3,8 @@ import { cn } from "./utils"
 
 const drawerContext = setContext()
 
-export const Ddrawer = ({ children, asChild }) => {
-    const isOpen = $state(false)
+export const Ddrawer = ({ children, asChild,defaultOpen,...props }) => {
+    const isOpen = $state(()=>defaultOpen(),[defaultOpen])
     const close = () => isOpen.value = false
     const toggle = () => isOpen.value = !isOpen.value
 
@@ -26,8 +26,33 @@ export const DdrawerTrigger = ({ children, className,asChild,onClick,...props}) 
         }
         toggle()
     }, className: className() })
-    return html`
+    return html `
         <${element} class="inline-flex cursor-pointer @{className}" on-click="toggle()" -- >
+            ${children}
+        </${element}>
+    `
+}
+
+export const DdrawerClose = ({ children, className, asChild, onClick, close: closeProp, ...props }) => {
+    forwardProps(props)
+    const element = asChild?.() ? 'as-child' : 'div'
+    const { close: internalClose } = useContext(drawerContext)
+
+    useInsert({
+        close: (e) => {
+            if (onClick()) onClick()(e)
+            
+            const customClose = closeProp?.()
+            if (typeof customClose === 'function') {
+                customClose(e, internalClose)
+            } else {
+                internalClose(e)
+            }
+        },
+        className: className()
+    })
+    return html`
+        <${element} class="inline-flex cursor-pointer @{className}" on-click="close()" -- >
             ${children}
         </${element}>
     `
@@ -45,8 +70,8 @@ export const DdrawerContent = ({ children, className, side, asChild, ...props })
     })
 
     const classActive = () => cn(
-        "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out duration-300 border-border",
-        sides()[side()] || sides().right,isOpen.value?'opacity-100':'opacity--',
+        "fixed z-1000 gap-4 bg-background p-6 shadow-lg transition ease-in-out duration-300 border-border",
+        sides()[side()] || sides().right,isOpen.value?'opacity-100':'opacity-0',
         className()
     )
 
@@ -59,7 +84,8 @@ export const DdrawerContent = ({ children, className, side, asChild, ...props })
     const Element = asChild?.() ? 'as-child' : 'div';
 
     return html`
-        <div if="isOpen()" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm animate-in fade-in" on-click.self.prevent="close()">
+        <div class="@{isOpen() ?'opacity-100':'opacity-0'}">
+        <div if="isOpen()" class="fixed inset-0 z-1000 bg-black/80 backdrop-blur-sm animate-in fade-in" on-click.self.prevent="close()">
             <${Element} class="@{classActive()}" -- >
                 <button 
                     on-click="close()"
@@ -70,6 +96,7 @@ export const DdrawerContent = ({ children, className, side, asChild, ...props })
                 </button>
                 ${children}
             </div>
+        </div>
         </div>
     `
 }
@@ -101,12 +128,19 @@ export const DdrawerDescription = ({ children, className,asChild }) => {
 }
 
 useValidateComponent(Ddrawer, {
-    asChild:{default:false,type:Function}
+    asChild:{default:false,type:Function},
+    defaultOpen:{default:false,type:Boolean}
 })
 useValidateComponent(DdrawerTrigger, {
     className: { default: '', type: String },
     onClick:{default:()=>{},type:Function},
     asChild:{default:false,type:Boolean}
+})
+useValidateComponent(DdrawerClose, {
+    className: { default: '', type: String },
+    onClick: { default: () => { }, type: Function },
+    asChild: { default: false, type: Boolean },
+    close: { type: Function }
 })
 useValidateComponent(DdrawerContent, {
     className: { default: '', type: String },

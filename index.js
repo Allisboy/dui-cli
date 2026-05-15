@@ -29,8 +29,22 @@ async function getAvailableComponents(dir, base = '') {
 }
 
 program
+  .command('list')
+  .description('List all available Dui components')
+  .action(async () => {
+    const __filename = fileURLToPath(import.meta.url);
+    const cliDir = path.dirname(__filename);
+    const templatesDir = path.join(cliDir, 'templates', 'components');
+    
+    const available = await getAvailableComponents(templatesDir);
+    console.log(blue('\nAvailable Dui components:'));
+    available.forEach(c => console.log(green(` - ${c}`)));
+    console.log(yellow('\nUse "dui add <name>" to install any of these.\n'));
+  });
+
+program
   .command('init')
-  .description('Initialize Dui components setup in your project (creates src/components, adds utils.js and style.css)')
+  .description('Initialize Dui components setup in your project (creates src/components, adds utils.js, dprovider.js, and style.css)')
   .action(async () => {
     console.log(blue('Initializing Dui setup...'));
 
